@@ -3,18 +3,11 @@ import { RootState } from "../../app/store"
 
 export type formBuilderFieldObject = {
   id: string
-  type:
-    | "text"
-    | "number"
-    | "email"
-    | "select"
-    | "textarea"
-    | "button"
-    | "fieldset"
-    | "datalist"
   label: string
+  type: "text" | "number" | "email" | "select" | "checkbox" | "button"
   name: string
-  value: string
+  placeholder: string
+  fullWidth: boolean
   options?: string[]
 }
 export type formBuilderState = {
