@@ -9,9 +9,27 @@ import {
   RadioGroup,
   Checkbox,
   TextField,
+  Select,
+  Button,
+  InputLabel,
 } from "@mui/material"
+import { useSelector } from "react-redux"
+import { RootState } from "../../app/store"
+import { selectFormBuilder } from "../formBuilder/formBuilderSlice"
+import { useAppDispatch } from "../../app/hooks"
+
+const fieldTypeToComponentMap = {
+  text: <TextField variant="filled" type="text" fullWidth />,
+  number: <TextField variant="filled" type="number" fullWidth />,
+  email: <TextField variant="filled" type="email" fullWidth />,
+  select: <Select variant="filled" fullWidth />,
+  checkbox: <Checkbox defaultChecked />,
+  button: <Button />,
+}
 
 const FormViewer = () => {
+  const formBuilderState = useSelector(selectFormBuilder)
+  const dispatch = useAppDispatch()
   return (
     <Box
       sx={{
@@ -20,47 +38,47 @@ const FormViewer = () => {
         boxSizing: "border-box",
         height: "92vh",
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
-        justifyContent: "space-between",
+        justifyContent: "flex-start",
         backgroundColor: "var(--secondary-background-color)",
+        gap: "20px",
         color: "var(--background-color)",
       }}
     >
+      <Button
+        onClick={() => {
+          return dispatch(resetFields())
+        }}
+      >
+        Reset
+      </Button>
       <FormGroup
         sx={{
           width: { xs: "96vw", sm: "96vw", md: "70vw" },
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "flex-start",
           gap: "18px",
         }}
       >
-        <FormLabel>Test label</FormLabel>
-        <TextField
-          variant="filled"
-          label="Email"
-          fullWidth
-          autoComplete="email"
-          placeholder="Enter a valid email address"
-        />
-        <TextField
-          variant="filled"
-          label="Email"
-          fullWidth
-          autoComplete="email"
-          placeholder="Enter a valid email address"
-        />
-        <TextField
-          variant="filled"
-          label="Email"
-          fullWidth
-          autoComplete="email"
-          placeholder="Enter a valid email address"
-        />
-        <TextField
-          variant="filled"
-          label="Email"
-          fullWidth
-          autoComplete="email"
-          placeholder="Enter a valid email address"
-        />
+        <FormLabel
+          sx={{
+            textAlign: "center",
+          }}
+        >
+          My Form
+        </FormLabel>
+        {formBuilderState.fieldObjectList.length !== 0 &&
+          formBuilderState.fieldObjectList.map((item) => {
+            return (
+              <div key={item.id}>
+                <InputLabel id="fieldSelectLabel">{item.label}</InputLabel>
+                {fieldTypeToComponentMap[item.type]}
+              </div>
+            )
+          })}
       </FormGroup>
     </Box>
   )

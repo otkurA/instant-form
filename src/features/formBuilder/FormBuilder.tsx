@@ -19,6 +19,9 @@ import {
 } from "@mui/material"
 import { useState } from "react"
 import { useForm, SubmitHandler } from "react-hook-form"
+import { useAppDispatch } from "../../app/hooks"
+import { nanoid } from "nanoid"
+import { addField } from "./formBuilderSlice"
 const fieldTypes = ["text", "number", "email", "select", "checkbox", "button"]
 type FormBuilderInputs = {
   formField: string
@@ -52,7 +55,44 @@ export const FormBuilder = () => {
     reset,
   } = useForm<FormBuilderInputs>()
   const [fieldSelectValue, setFieldSelectValue] = useState("")
-  const onSubmit: SubmitHandler<FormBuilderInputs> = (data) => console.log(data)
+  const dispatch = useAppDispatch()
+  const onSubmit: SubmitHandler<FormBuilderInputs> = (
+    data: FormBuilderInputs,
+  ) => {
+    const builderFieldObjectTemp = {
+      id: nanoid(),
+      type: data.formField,
+      label: data.fieldLabel,
+      name: data.fieldName,
+      placeholder: data.fieldPlaceHolder,
+      fullWidth: data.fieldWidth,
+      options: data.selectOption ? data.selectOption.split(",") : [],
+      checkboxOptions: data.checkboxOption
+        ? data.checkboxOption.split(",")
+        : [],
+      buttonText: data.buttonText,
+      buttonType: data.buttonType,
+      buttonVariant: data.buttonVariant,
+    }
+    for (const property in builderFieldObjectTemp) {
+      //@ts-ignore
+      if (
+        //@ts-ignore
+        builderFieldObjectTemp[property] === "" ||
+        //@ts-ignore
+        builderFieldObjectTemp[property] === [] ||
+        //@ts-ignore
+        builderFieldObjectTemp[property] === undefined
+      ) {
+        //@ts-ignore
+        delete builderFieldObjectTemp[property]
+      }
+    }
+    //@ts-ignore
+    dispatch(addField(builderFieldObjectTemp))
+    setFieldSelectValue("")
+    reset()
+  }
   console.log(watch("fieldName"))
   return (
     <ThemeProvider theme={formBuilderTheme}>
@@ -256,7 +296,10 @@ export const FormBuilder = () => {
             type="reset"
             variant="outlined"
             sx={{ my: "10px" }}
-            onClick={() => setFieldSelectValue("")}
+            onClick={() => {
+              setFieldSelectValue("")
+              reset()
+            }}
           >
             Reset
           </Button>

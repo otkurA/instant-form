@@ -3,12 +3,16 @@ import { RootState } from "../../app/store"
 
 export type formBuilderFieldObject = {
   id: string
-  label: string
   type: "text" | "number" | "email" | "select" | "checkbox" | "button"
+  label: string
   name: string
   placeholder: string
   fullWidth: boolean
   options?: string[]
+  checkboxOptions?: string[]
+  buttonText?: string
+  buttonType?: string
+  buttonVariant?: string
 }
 export type formBuilderState = {
   fieldObjectList: formBuilderFieldObject[]
@@ -47,10 +51,22 @@ const formBuilderSlice = createSlice({
       state.fieldObjectList.splice(index, 1)
       state.fieldObjectList.splice(index + 1, 0, action.payload)
     },
+    resetFields: (state) => {
+      const index = state.fieldObjectList.findIndex(
+        (item) => item.id === action.payload.id,
+      )
+      state = { fieldObjectList: [] }
+    },
   },
 })
-export const { addField, editField, moveFieldDown, moveFieldUp, removeField } =
-  formBuilderSlice.actions
+export const {
+  addField,
+  editField,
+  moveFieldDown,
+  moveFieldUp,
+  removeField,
+  resetFields,
+} = formBuilderSlice.actions
 
 export const selectFormBuilder = (state: RootState) => state.formBuilder
 
