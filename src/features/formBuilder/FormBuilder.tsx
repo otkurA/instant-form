@@ -21,14 +21,14 @@ import { useState } from "react"
 import { useForm, SubmitHandler } from "react-hook-form"
 import { useAppDispatch } from "../../app/hooks"
 import { nanoid } from "nanoid"
-import { addField } from "./formBuilderSlice"
+import { addField, formBuilderFieldObject } from "./formBuilderSlice"
 const fieldTypes = ["text", "number", "email", "select", "checkbox", "button"]
 type FormBuilderInputs = {
-  formField: string
+  formField: "text" | "number" | "email" | "select" | "checkbox" | "button"
   fieldLabel: string
   fieldName: string
   fieldPlaceHolder: string
-  fieldWidth: string
+  fieldWidth: boolean
   selectOption?: string
   checkboxOption?: string
   buttonText?: string
@@ -59,7 +59,7 @@ export const FormBuilder = () => {
   const onSubmit: SubmitHandler<FormBuilderInputs> = (
     data: FormBuilderInputs,
   ) => {
-    const builderFieldObjectTemp = {
+    const builderFieldObjectTemp: formBuilderFieldObject = {
       id: nanoid(),
       type: data.formField,
       label: data.fieldLabel,
@@ -75,21 +75,22 @@ export const FormBuilder = () => {
       buttonVariant: data.buttonVariant,
     }
     for (const property in builderFieldObjectTemp) {
-      //@ts-ignore
       if (
-        //@ts-ignore
-        builderFieldObjectTemp[property] === "" ||
-        //@ts-ignore
-        builderFieldObjectTemp[property] === [] ||
-        //@ts-ignore
-        builderFieldObjectTemp[property] === undefined
+        builderFieldObjectTemp[property as keyof formBuilderFieldObject] ===
+          "" ||
+        (property === "options" &&
+          builderFieldObjectTemp[property]?.length === 0) ||
+        (property === "checkboxOptions" &&
+          builderFieldObjectTemp[property]?.length === 0) ||
+        builderFieldObjectTemp[property as keyof formBuilderFieldObject] ===
+          undefined
       ) {
-        //@ts-ignore
-        delete builderFieldObjectTemp[property]
+        delete builderFieldObjectTemp[property as keyof formBuilderFieldObject]
       }
     }
-    //@ts-ignore
-    dispatch(addField(builderFieldObjectTemp))
+    const id = nanoid()
+
+    dispatch(addField({ ...builderFieldObjectTemp }))
     setFieldSelectValue("")
     reset()
   }
@@ -279,12 +280,12 @@ export const FormBuilder = () => {
             name="radio-buttons-group"
           >
             <FormControlLabel
-              value="fullWidth"
+              value="true"
               control={<Radio />}
               label="Full Width"
             />
             <FormControlLabel
-              value="halfWidth"
+              value="false"
               control={<Radio />}
               label="Half Width"
             />

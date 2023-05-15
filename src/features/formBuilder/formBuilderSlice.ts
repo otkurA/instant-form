@@ -51,11 +51,8 @@ const formBuilderSlice = createSlice({
       state.fieldObjectList.splice(index, 1)
       state.fieldObjectList.splice(index + 1, 0, action.payload)
     },
-    resetFields: (state) => {
-      const index = state.fieldObjectList.findIndex(
-        (item) => item.id === action.payload.id,
-      )
-      state = { fieldObjectList: [] }
+    resetFields: () => {
+      return initialState
     },
   },
 })

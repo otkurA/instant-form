@@ -15,7 +15,7 @@ import {
 } from "@mui/material"
 import { useSelector } from "react-redux"
 import { RootState } from "../../app/store"
-import { selectFormBuilder } from "../formBuilder/formBuilderSlice"
+import { resetFields, selectFormBuilder } from "../formBuilder/formBuilderSlice"
 import { useAppDispatch } from "../../app/hooks"
 
 const fieldTypeToComponentMap = {
@@ -48,7 +48,7 @@ const FormViewer = () => {
     >
       <Button
         onClick={() => {
-          return dispatch(resetFields())
+          dispatch(resetFields())
         }}
       >
         Reset
